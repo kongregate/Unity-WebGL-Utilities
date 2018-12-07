@@ -39,6 +39,7 @@ function CachedXMLHttpRequest() {
 
   function revalidateCrossOriginRequest(meta, self, sendArguments) {
     var headXHR = new CachedXMLHttpRequest.XMLHttpRequest();
+    var onerror = xhr.onerror;
     headXHR.open("HEAD", meta.requestURL, cache.async);
     headXHR.onload = function() {
       cache.override = meta.lastModified ? meta.lastModified == headXHR.getResponseHeader("Last-Modified") : meta.eTag && meta.eTag == getETag(headXHR);
@@ -46,6 +47,11 @@ function CachedXMLHttpRequest() {
         return send.apply(self, sendArguments);
       loadComplete();
     };
+    headXHR.onerror = function(e) {
+			// if there is an error with the head request forward the request back 
+			// to the request that unity knows about. 
+			if (onerror) onerror(e);
+		}
     headXHR.send();
   }
 
