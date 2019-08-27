@@ -5,6 +5,7 @@ namespace Kongregate {
     public class WebGLMemoryStats : MonoBehaviour {
         [Tooltip("Interval (in seconds) between log entries")]
         public uint LogIntervalSeconds = 15;
+        public bool enableInProductionBuilds;
 
         public static uint GetUsedMemorySize() {
             return GetTotalStackSize() + GetStaticMemorySize() + GetDynamicMemorySize();
@@ -16,7 +17,10 @@ namespace Kongregate {
         }
 
         void Start() {
-            InvokeRepeating("Log", 0, LogIntervalSeconds);
+            if (Debug.isDebugBuild || enableInProductionBuilds)
+            {
+                InvokeRepeating("Log", 0, LogIntervalSeconds);
+            }
         }
 
         private void Log() {
